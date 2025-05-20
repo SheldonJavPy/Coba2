@@ -1,98 +1,86 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>IoT Dashboard - Home</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f4f8;
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 0.5rem;
-    }
-    p {
-      color: #666;
-      margin-bottom: 2rem;
-    }
-    button {
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1.1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #3730a3;
-    }
-    #deviceList {
-      margin-top: 2rem;
-      width: 100%;
-      max-width: 500px;
-    }
-    .device-item {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
-    }
-  </style>
-</head>
-<body>
+// IoT Dashboard Home Page
 
-  <h1>Dashboard IoT Naoki</h1>
-  <p>Selamat datang! Mulai dengan membuat device baru untuk monitoring data kamu.</p>
-  
-  <button id="createDeviceBtn">Create New Device</button>
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 
-  <section id="deviceList">
-    <!-- List device akan muncul di sini -->
-  </section>
+const dummyData = [
+  { time: "10:00", value: 25 },
+  { time: "10:10", value: 27 },
+  { time: "10:20", value: 26 },
+  { time: "10:30", value: 28 },
+];
 
-  <script>
-    const createBtn = document.getElementById('createDeviceBtn');
-    const deviceList = document.getElementById('deviceList');
+export default function HomePage() {
+  return (
+    <div className="p-6 space-y-8">
+      <h1 className="text-3xl font-bold">IoT Monitoring Dashboard</h1>
 
-    // Simulasi data device yang dibuat
-    let devices = [];
+      <Button className="bg-blue-600 hover:bg-blue-700 text-white">Create New Device</Button>
 
-    function renderDevices() {
-      deviceList.innerHTML = ''; // Clear dulu
-      if (devices.length === 0) {
-        deviceList.innerHTML = '<p>Tidak ada device, silakan buat device baru.</p>';
-        return;
-      }
-      devices.forEach((device, idx) => {
-        const div = document.createElement('div');
-        div.className = 'device-item';
-        div.textContent = `Device ${idx + 1}: ${device.name}`;
-        deviceList.appendChild(div);
-      });
-    }
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="space-y-4 p-4">
+            <h2 className="text-xl font-semibold">Device 1</h2>
 
-    createBtn.addEventListener('click', () => {
-      const deviceName = prompt('Masukkan nama device baru:');
-      if (deviceName && deviceName.trim().length > 0) {
-        devices.push({ name: deviceName.trim() });
-        renderDevices();
-      } else {
-        alert('Nama device tidak boleh kosong!');
-      }
-    });
+            {/* Control Section */}
+            <div className="flex items-center justify-between">
+              <span className="font-medium">Control Switch</span>
+              <Switch />
+            </div>
 
-    // Initial render
-    renderDevices();
-  </script>
-</body>
-</html>
+            {/* Monitoring Data */}
+            <div className="space-y-2">
+              <div>
+                <p className="text-sm text-gray-500">Voltage</p>
+                <p className="text-lg font-semibold">220 V</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Current</p>
+                <p className="text-lg font-semibold">5 A</p>
+              </div>
+            </div>
+
+            {/* Table View */}
+            <div className="mt-4">
+              <h3 className="font-semibold mb-2">Recent Data</h3>
+              <table className="w-full text-sm border">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border px-2 py-1">Time</th>
+                    <th className="border px-2 py-1">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dummyData.map((entry, index) => (
+                    <tr key={index}>
+                      <td className="border px-2 py-1">{entry.time}</td>
+                      <td className="border px-2 py-1">{entry.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Chart View */}
+            <div className="h-48 mt-4">
+              <h3 className="font-semibold mb-2">Voltage Over Time</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dummyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
